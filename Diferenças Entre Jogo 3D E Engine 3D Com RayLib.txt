@@ -1,0 +1,38 @@
+Pensando
+Pesquisando
+A principal diferença é
+o objetivo e o nível de abstração. A Raylib é uma biblioteca projetada para ajudar a criar jogos de forma simples e direta, 
+não uma engine completa por si só. 
+Aqui está um detalhamento das diferenças entre criar um jogo 3D e uma engine 3D usando Raylib em C:
+1. Criar um Jogo 3D com Raylib (Usando Raylib como Biblioteca)
+Neste cenário, seu foco principal é a lógica específica do jogo e a experiência do usuário.
+
+    Foco: Implementar as regras do jogo, design de níveis, mecânicas de gameplay, comportamento de inimigos, UI/UX e progressão do 
+jogador.
+    Abstração: Você utiliza as funções prontas da Raylib (DrawModel, LoadTexture, CheckCollisionSpheres, GetKeyPressed) para gerenciar
+gráficos, áudio e entrada. Você não se preocupa em como o OpenGL funciona internamente, apenas chama a função.
+    Ferramentas: Você escreve código para tudo, embora possa usar ferramentas externas como Blender para criar modelos e a Raylib 
+para carregá-los (LoadModel). Você não tem um editor visual de cenas.
+    Resultado: Um produto jogável específico (por exemplo, um jogo de plataforma 3D, um simulador de voo simples). 
+
+2. Criar uma Engine 3D com Raylib (Usando Raylib como Base)
+Neste cenário, seu foco principal é construir as ferramentas e a infraestrutura que outros jogos (ou o seu próprio) usarão no futuro.
+
+    Foco: Desenvolver os subsistemas genéricos (como os que você listou: cTransform, cQuaternion, cMesh, cShader, cGameObject, 
+cCollisor, editor de logica visual). Você está criando as abstrações que a Raylib não oferece por padrão.
+    Abstração: Você usa a Raylib em um nível mais baixo, talvez combinando suas funções com código OpenGL customizado para criar 
+sistemas mais avançados, como shadow mapping ou sistemas de partículas complexos.
+    Ferramentas: Seu principal produto é um conjunto de bibliotecas reutilizáveis, uma estrutura de classes e, crucialmente, 
+ferramentas de produtividade, como um editor de níveis ou um sistema de scripting visual.
+    Resultado: Um framework ou conjunto de ferramentas que pode ser usado para criar vários jogos diferentes com a mesma base. 
+
+Resumo das Diferenças
+Característica                Criar um Jogo 3D com Raylib	        Criar uma Engine 3D com Raylib
+Objetivo	              Fazer um jogo específico.	                Fazer ferramentas para fazer jogos.
+Foco	                      Lógica do jogo (gameplay).	                Infraestrutura e abstração.
+Nível de Código	Alto nível    (chama funções da Raylib).	                Baixo/Médio nível (implementa sistemas complexos).
+Ferramentas Visuais	      Geralmente ausentes ou muito simples.	O desenvolvimento de um Editor é central.
+Reutilização	              O código é específico para aquele jogo.	O código é genérico e reutilizável para outros projetos.
+
+Em essência, a Raylib fornece a "tinta e o pincel", mas se você está pintando um quadro específico, você está fazendo um jogo. 
+Se você está projetando uma máquina de fazer pincéis e tintas melhores, você está fazendo uma engine.
