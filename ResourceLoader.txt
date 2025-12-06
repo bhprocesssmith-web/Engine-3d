@@ -1,0 +1,30 @@
+Pensando
+ResourceLoader
+(Carregador de Recursos) é um componente arquitetônico fundamental em qualquer engine 3D moderna. Ele é o sistema responsável por 
+gerenciar tudo o que não é código puro na sua engine, ou seja, todos os arquivos externos que compõem o jogo.
+A função principal do ResourceLoader é carregar dados do armazenamento persistente (disco rígido, SSD, memória do celular) para 
+a memória RAM e, quando necessário, para a memória da GPU (VRAM), de forma eficiente e controlada.
+O que o ResourceLoader gerencia?
+Ele lida com a importação e gerenciamento de assets (recursos) do jogo:
+
+    Modelos 3D: Arquivos .obj, .fbx, .gltf que definem a geometria dos objetos.
+    Texturas: Arquivos .png, .jpg, .dds que dão cor e detalhes aos modelos.
+    Áudio: Arquivos de música .mp3 ou efeitos sonoros .wav.
+    Shaders: O código que roda na GPU.
+    Configurações e Níveis: Arquivos de cena ou dados de script.
+
+Como ele funciona numa engine 3D?
+O processo envolve várias etapas coordenadas pelo ResourceLoader:
+
+    Requisição: Um componente do jogo (por exemplo, o gerenciador de níveis) solicita um recurso, como "carregue o modelo do personagem 
+principal".
+    Carregamento Assíncrono (Comum): Em jogos modernos, o carregamento geralmente não trava o jogo inteiro. O ResourceLoader frequentemente 
+opera em uma thread separada (carregamento em segundo plano) para que o jogo continue rodando suavemente enquanto os dados são lidos.
+    Processamento: O ResourceLoader lê o arquivo bruto e o converte em um formato que a engine 3D pode usar imediatamente (por exemplo, 
+descompactando uma imagem JPG e enviando-a para a memória da GPU como uma textura OpenGL ou DirectX).
+    Gerenciamento de Cache/Instâncias: Se dois objetos diferentes no jogo usam a mesma textura, o ResourceLoader é inteligente o suficiente 
+para carregar o arquivo do disco apenas uma vez, e fornecer referências (ponteiros) para essa única instância na memória para ambos os objetos,
+ economizando RAM.
+
+Em resumo, o ResourceLoader é o sistema de logística da engine, garantindo que todos os elementos visuais e sonoros cheguem ao local certo 
+na memória, na hora certa, sem travar o jogo.

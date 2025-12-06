@@ -1,0 +1,21 @@
+Uma
+Matrix4f (ou matriz 4x4 de ponto flutuante) em uma engine de jogo é uma estrutura de dados matemática fundamental usada para realizar 
+transformações gráficas no espaço 3D. É essencialmente uma grade de 16 números de ponto flutuante organizados em 4 linhas e 4 colunas [1].
+Esta matriz é a principal ferramenta para representar e combinar as operações de transformação que determinam a posição, orientação e 
+escala de objetos no mundo virtual, bem como a forma como a câmera visualiza esse mundo [1, 2].
+Principais Usos da Matrix4f em uma Engine
+A Matrix4f é utilizada para três transformações principais, frequentemente combinadas em uma única "matriz de modelo-visão-projeção" 
+(Model-View-Projection - MVP) [2, 3]:
+
+    Transformação do Modelo (Model Transformation): Move, gira e redimensiona objetos individuais (como um personagem, uma árvore ou 
+um edifício) do espaço local do objeto para a posição e orientação corretas no mundo 3D [2].
+    Transformação da Visão (View Transformation): Simula o posicionamento e a orientação da câmera (ou do jogador) no mundo. Ela converte 
+coordenadas do mundo para a perspectiva da câmera [2].
+    Transformação de Projeção (Projection Transformation): Define como o mundo 3D é mapeado para a tela 2D do usuário. Isso pode ser uma 
+projeção em perspectiva (objetos distantes parecem menores) ou ortográfica (usada frequentemente em jogos 2D ou desenhos técnicos) [2, 3].
+
+Por Que 4x4?
+A dimensão 4x4 é utilizada para incorporar a translação (movimento/posição) de forma elegante junto com a rotação e a escala. Isso é feito 
+usando coordenadas homogêneas, que adicionam uma quarta dimensão (W) aos vetores de posição (X, Y, Z) [3, 1].
+Em resumo, a Matrix4f é a espinha dorsal matemática que permite que a engine calcule exatamente onde cada pixel de um objeto 3D deve 
+aparecer na sua tela.

@@ -1,0 +1,14 @@
+Uma
+Vector2f em uma engine (motor de jogo) é uma estrutura de dados fundamental usada para representar um vetor bidimensional de ponto 
+flutuante [1].
+Essencialmente, ela armazena dois valores de ponto flutuante (comumente x e y) e é utilizada para uma ampla gama de propósitos em 
+gráficos e simulação, tais como: 
+
+    Posição: A localização de um objeto (como um personagem, inimigo ou elemento da interface do usuário) no espaço 2D [1].
+    Movimento/Velocidade: A direção e a rapidez com que um objeto se move (frequentemente chamada de velocidade ou velocity).
+    Direção: Um vetor que aponta para uma direção específica, geralmente normalizado (comprimento igual a 1).
+    Escala: O tamanho ou a proporção de um objeto nos eixos horizontal e vertical.
+    Coordenadas de Textura: Usado para mapear pontos de uma imagem (textura) em um modelo ou superfície [1]. 
+
+O sufixo f indica que os componentes são do tipo float (ponto flutuante), o que oferece a precisão necessária para cálculos suaves e 
+realistas em tempo real, em contraste com Vector2i (inteiro) ou Vector2d (duplo) [1].
