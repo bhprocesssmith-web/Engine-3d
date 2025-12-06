@@ -1,0 +1,30 @@
+Pensando
+São
+coisas diferentes, embora intimamente ligadas.
+Imagine que a engine 3D é um carro de corrida:
+1. O Motor de Execução (Game Engine / Runtime)
+O motor de execução é o coração da sua engine — é o conjunto de códigos e subsistemas que você listou anteriormente (cRenderUtil, 
+cPhysics, cAudio, cTransform).
+
+    Função: É o que faz o jogo rodar de fato. Ele gerencia o loop principal, atualiza a física, processa a entrada do usuário, 
+renderiza os gráficos na tela em tempo real e toca o áudio.
+    Onde roda: Roda no computador do jogador final quando ele abre o jogo.
+    É o código: É a parte que você compila em um arquivo .exe (executável) que o usuário final executa.
+
+2. A Interface (Editor de Engine / Ferramenta de Autor)
+A interface é a parte visual (o editor gráfico) que os desenvolvedores do jogo usam para criar o conteúdo do jogo, sem precisar 
+escrever código o tempo todo.
+
+    Função: Permite aos designers de níveis, artistas e programadores organizarem visualmente os objetos, ajustarem propriedades 
+(ex: arrastar um modelo para a cena, posicionar luzes, ajustar a gravidade em um menu suspenso, usar seu editor de logica visual).
+    Onde roda: Roda apenas no computador de quem está desenvolvendo o jogo (o time de desenvolvimento).
+    É a ferramenta: É o programa que você abre para "montar" o jogo.
+
+Resumo da Diferença
+Característica
+	Motor de Execução (Runtime)	Interface (Editor / Ferramenta)
+Público-alvo	Jogador final	Desenvolvedores do jogo
+Função Principal	Rodar o jogo	Criar e editar o jogo
+Exemplo	O código C que desenha a tela	A janela onde você arrasta objetos com o mouse
+Em motores comerciais como Unity ou Unreal, o Editor é o programa grande e visual que você baixa, e o Motor de Execução é o 
+código otimizado que eles empacotam quando você clica em "Build Game" (Compilar Jogo).

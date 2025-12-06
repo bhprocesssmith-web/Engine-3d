@@ -1,0 +1,20 @@
+Pensando
+O Minecraft foi criado majoritariamente "direto no código" (Java), sem o uso de uma
+engine comercial pré-existente como Unity ou Unreal.
+O criador, Markus "Notch" Persson, essencialmente criou a engine dele mesmo enquanto fazia o jogo.
+Aqui está um resumo de como o desenvolvimento aconteceu:
+1. Criado "Direto no Código" em Java
+
+    Linguagem: O jogo original foi escrito em Java.
+    API Gráfica: Ele usou a biblioteca leve LWJGL (Lightweight Java Game Library) para acessar funções de baixo nível do OpenGL, 
+gerenciar a entrada do usuário e o áudio.
+    Motor Próprio: Notch não usou uma engine pronta; ele programou todos os sistemas do zero: o sistema de rendering de blocos 
+(os chunks), a geração procedural de terreno, o inventário, a física básica e a detecção de colisão. Ele criou o "motor de execução" 
+do zero. 
+
+2. Sem uma "Interface de Editor" Inicial
+Inicialmente, não havia uma interface visual de editor (como o Unity Editor). Todo o posicionamento de blocos e lógica de jogo 
+eram gerados via código ou aconteciam dinamicamente durante o gameplay (o próprio jogo era o editor).
+Resumo
+A abordagem do Minecraft se alinha mais com a ideia de criar uma engine personalizada enquanto se cria o jogo.
+Notch começou com bibliotecas de baixo nível (LWJGL/OpenGL) e construiu, camada por camada, a arquitetura única que define o Minecraft. É um exemplo clássico de desenvolvimento indie que evoluiu de um protótipo simples para um fenômeno global.
