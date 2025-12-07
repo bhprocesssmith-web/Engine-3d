@@ -1,0 +1,148 @@
+#include "raylib.h"
+#include "raymath.h"
+#include "rlgl.h" 
+#include <stdbool.h> // Necessário para usar 'bool'
+
+// Função auxiliar para encontrar o índice de uma animação pelo nome
+int FindAnimationIndex(ModelAnimation* animations, int count, const char* name)
+{
+    for (int i = 0; i < count; i++)
+    {
+        // Usa a funcao segura da raylib para comparar nomes
+        if (TextIsEqual(animations[i].name, name))
+        {
+            return i;
+        }
+    }
+    return -1; // Retorna -1 se não encontrar
+}
+
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
+{
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+    const char* modelFileName = "cube.gltf"; // Substitua pelo seu arquivo real
+
+    InitWindow(screenWidth, screenHeight, "raylib [models] example - player follow camera and anims");
+
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 6.0f, 6.0f, 6.0f }; 
+    camera.target = (Vector3){ 0.0f, 2.0f, 0.0f }; 
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    Model model = LoadModel(modelFileName);
+    Vector3 position = { 0.0f, 0.0f, 0.0f }; // Posição do "player"
+
+    int animsCount = 0;
+    unsigned int animCurrentFrame = 0;
+    ModelAnimation* modelAnimations = LoadModelAnimations(modelFileName, &animsCount);
+    
+    int idleAnimIndex = -1;
+    int runAnimIndex = -1;
+    unsigned int currentAnimIndex = 0; 
+
+    if (animsCount > 0)
+    {
+        // Encontra os índices (Lembre-se: os nomes no seu arquivo GLTF importam!)
+        idleAnimIndex = FindAnimationIndex(modelAnimations, animsCount, "idle");
+        runAnimIndex = FindAnimationIndex(modelAnimations, animsCount, "run");
+
+        if (idleAnimIndex != -1) {
+            currentAnimIndex = idleAnimIndex;
+        }
+    }
+
+    SetTargetFPS(60);
+    //--------------------------------------------------------------------------------------
+
+    // Main game loop
+    while (!WindowShouldClose())
+    {
+        // Update (Lógica do jogo)
+        //----------------------------------------------------------------------------------
+
+        // --- Lógica de MOVIEMNTO E CAMERA SEGUINDO ---
+        bool isMoving = false;
+        if (IsKeyDown(KEY_W)) { position.z -= 0.1f; isMoving = true; }
+        if (IsKeyDown(KEY_S)) { position.z += 0.1f; isMoving = true; }
+        if (IsKeyDown(KEY_A)) { position.x -= 0.1f; isMoving = true; }
+        if (IsKeyDown(KEY_D)) { position.x += 0.1f; isMoving = true; }
+
+        // A câmera sempre aponta para o player
+        camera.target = position;
+
+        // A câmera mantém um offset (distância) fixo atrás/acima do player
+        camera.position.x = position.x + 6.0f; 
+        camera.position.y = position.y + 6.0f;
+        camera.position.z = position.z + 6.0f;
+        // ----------------------------------------------
+
+        // --- Lógica de TROCA DE ANIMAÇÃO AUTOMÁTICA ---
+        if (animsCount > 0 && model.boneCount > 0)
+        {
+            if (isMoving && runAnimIndex != -1)
+            {
+                currentAnimIndex = runAnimIndex;
+            }
+            else if (!isMoving && idleAnimIndex != -1)
+            {
+                currentAnimIndex = idleAnimIndex;
+            }
+
+            // Atualiza o frame da animação que foi selecionada acima
+            ModelAnimation currentAnim = modelAnimations[currentAnimIndex];
+            animCurrentFrame = (animCurrentFrame + 1) % currentAnim.frameCount;
+            UpdateModelAnimation(model, currentAnim, animCurrentFrame);
+        }
+        // ----------------------------------------------------
+
+        //----------------------------------------------------------------------------------
+
+        // Draw (Desenho na tela)
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        BeginMode3D(camera);
+
+        DrawModel(model, position, 1.0f, WHITE);
+        if (model.boneCount > 0) DrawModelWires(model, position, 1.0f, GREEN);
+        DrawGrid(100, 1.0f);
+        EndMode3D();
+
+        DrawText("Use WASD para mover o player.", 10, 10, 15, DARKGRAY);
+        DrawText("Camera segue automaticamente e troca animacao (run/idle).", 10, 30, 15, DARKGRAY);
+
+        // Exibe status de depuração
+        if (animsCount > 0 && model.boneCount > 0)
+        {
+             DrawText(TextFormat("Animacao Atual: %s | Status: %s", modelAnimations[currentAnimIndex].name, isMoving ? "Correndo" : "Parado"), 10, GetScreenHeight() - 30, 15, DARKGRAY);
+        }
+        else
+        {
+             DrawText("Modelo ou animacoes incompativeis.", 10, GetScreenHeight() - 30, 15, RED);
+        }
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // De-Initialization (Limpeza)
+    //--------------------------------------------------------------------------------------
+    if (animsCount > 0)
+    {
+        UnloadModelAnimations(modelAnimations, animsCount);
+    }
+    UnloadModel(model);
+    CloseWindow();
+    //--------------------------------------------------------------------------------------
+
+    return 0;
+}
