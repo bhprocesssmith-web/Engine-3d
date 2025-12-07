@@ -1,0 +1,2 @@
+no blender 2.81 coloca exportar gltf
+e na aba format coloca = gltf embedded(.gltf)

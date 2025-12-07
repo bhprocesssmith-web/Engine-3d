@@ -1,0 +1,114 @@
+#include "raylib.h"
+#include "raymath.h"
+#include "rlgl.h" // Necessário para algumas definições internas se a raylib for muito recente/antiga
+
+//------------------------------------------------------------------------------------
+// Program main entry point
+//------------------------------------------------------------------------------------
+int main(void)
+{
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+    // Mantenha o nome do seu arquivo aqui, ex: "cube_animado.glb"
+    const char* modelFileName = "cube.gltf";
+
+    InitWindow(screenWidth, screenHeight, "raylib [models] example - loading gltf animation");
+
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 6.0f, 6.0f, 6.0f };
+    camera.target = (Vector3){ 0.0f, 2.0f, 0.0f };
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    // Carrega o modelo gltf/glb
+    Model model = LoadModel(modelFileName);
+    Vector3 position = { 0.0f, 0.0f, 0.0f };
+
+    // Carrega as animações do modelo gltf/glb
+    int animsCount = 0;
+    unsigned int animIndex = 0;
+    unsigned int animCurrentFrame = 0;
+
+    ModelAnimation* modelAnimations = LoadModelAnimations(modelFileName, &animsCount);
+
+    SetTargetFPS(60);
+    //--------------------------------------------------------------------------------------
+
+    // Main game loop
+    while (!WindowShouldClose())
+    {
+        // Update (Lógica do jogo)
+        //----------------------------------------------------------------------------------
+        UpdateCamera(&camera, CAMERA_ORBITAL);
+
+        // SOMENTE execute a lógica de animação se houver animações E bones carregados
+        if (animsCount > 0 && model.boneCount > 0)
+        {
+            if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+            {
+                animIndex = (animIndex + 1) % animsCount;
+            }
+            else if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            {
+                animIndex = (animIndex + animsCount - 1) % animsCount;
+            }
+
+            // AQUI ESTÁ A SEÇÃO CRÍTICA DO ERRO
+            ModelAnimation currentAnim = modelAnimations[animIndex];
+            animCurrentFrame = (animCurrentFrame + 1) % currentAnim.frameCount;
+
+            // Esta função falha se 'model' não tiver a estrutura interna correta para a animação
+            UpdateModelAnimation(model, currentAnim, animCurrentFrame);
+        }
+
+        //----------------------------------------------------------------------------------
+
+        // Draw (Desenho na tela)
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        BeginMode3D(camera);
+
+        // Desenha o modelo (animado ou estático)
+        DrawModel(model, position, 1.0f, WHITE);
+        // Opcional: Desenha os bones se a raylib os carregou corretamente
+        if (model.boneCount > 0) DrawModelWires(model, position, 1.0f, GREEN);
+
+        DrawGrid(10, 1.0f);
+        EndMode3D();
+
+        DrawText("Use os botoes ESQUERDO/DIREITO do mouse para mudar a animacao (se houver)", 10, 10, 15, GRAY);
+
+        // Exibe status de depuração
+        if (animsCount > 0 && model.boneCount > 0)
+        {
+            ModelAnimation currentAnim = modelAnimations[animIndex];
+            DrawText(TextFormat("Animacao Atual: %s | Bones Carregados: Sim", currentAnim.name), 10, GetScreenHeight() - 30, 15, DARKGRAY);
+        }
+        else
+        {
+            DrawText(TextFormat("Bones Carregados: %i | Anims Carregadas: %i", model.boneCount, animsCount), 10, GetScreenHeight() - 30, 15, RED);
+            DrawText("O modelo pode nao ser compativel com animacao esqueletal.", 10, GetScreenHeight() - 50, 15, RED);
+        }
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // De-Initialization (Limpeza)
+    //--------------------------------------------------------------------------------------
+    if (animsCount > 0)
+    {
+        UnloadModelAnimations(modelAnimations, animsCount);
+    }
+
+    UnloadModel(model);
+    CloseWindow();
+    //--------------------------------------------------------------------------------------
+
+    return 0;
+}

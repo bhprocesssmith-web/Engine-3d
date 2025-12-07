@@ -1,0 +1,51 @@
+#include "raylib.h"
+#include "raymath.h"
+
+int main() {
+	// Initialization
+	//--------------------------------------------------------------------------------------
+	int largura = 800;
+	int altura = 600;
+
+	InitWindow(largura, altura, "raylib [core] example - basic 3d window");
+
+	// Atribuição sequencial: Declarando e configurando a câmera
+	Camera camera; // Apenas declara a variável 'camera'
+
+	// Usa type casting para garantir que o compilador entenda a inicialização da estrutura Vector3
+	camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Posição da câmera (X, Y, Z)
+	camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera está olhando
+	camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y)
+	camera.fovy = 45.0f;                                // Campo de visão vertical
+	camera.projection = CAMERA_PERSPECTIVE;             // Projeção em perspectiva
+
+	SetTargetFPS(60); // Define o limite de FPS
+	//--------------------------------------------------------------------------------------
+
+	// Main game loop
+	while (!WindowShouldClose()) { // Loop roda enquanto a janela não deve fechar (ESC ou botão X)
+
+		// Draw (Desenho na tela)
+		//----------------------------------------------------------------------------------
+		BeginDrawing();
+		ClearBackground(RAYWHITE); // Limpa o fundo com a cor branca
+
+		// Start 3D drawing mode
+		BeginMode3D(camera);
+
+		// AQUI VOCÊ PODE DESENHAR OBJETOS 3D, ex:
+		DrawGrid(10, 1.0f); // Desenha um chão quadriculado
+
+		EndMode3D(); // Finaliza o modo 3D
+
+		DrawFPS(10, 10); // Mostra o FPS na tela
+		EndDrawing();
+		//----------------------------------------------------------------------------------
+	}
+
+	// De-Initialization
+	//--------------------------------------------------------------------------------------
+	CloseWindow(); // Fecha a janela e o contexto OpenGL
+
+	return 0;
+}
