@@ -1,0 +1,73 @@
+#include "raylib.h"
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
+
+int main() {
+    // Inicialização da Janela e Contexto OpenGL
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Raylib Exemplo - Modelo com Textura Manual");
+
+    // --- Configuração da Câmera ---
+    Camera3D camera = { 0 };
+    camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Posição inicial da câmera
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };     // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };         // Vetor "para cima"
+    camera.fovy = 45.0f;                               // Campo de visão
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    //SetCameraMode(camera, CAMERA_ORBITAL); // Habilita controle interativo da câmera
+
+    // --- Carregamento de Recursos ---
+
+    // 1. Carrega o modelo 3D (pode ter materiais proprios, mas iremos sobrescrever)
+    Model cidade = LoadModel("resources/cube.obj");
+
+    // 2. Carrega a textura personalizada manualmente
+    Texture2D texturaPersonalizada = LoadTexture("resources/textura.png");
+
+    // 3. Aplica a textura carregada manualmente ao material do modelo
+    // Acessamos o primeiro material (index 0) e definimos o mapa de difusão (cor base)
+    // para a nossa nova textura.
+    cidade.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texturaPersonalizada;
+
+    // Posição centralizada para o modelo composto
+    Vector3 posCentral = { 0.0f, 0.0f, 0.0f };
+
+    SetTargetFPS(60);
+
+    // Loop principal do jogo
+    while (!WindowShouldClose()) {
+        UpdateCamera(&camera, CAMERA_ORBITAL);
+
+        // --- Lógica de Desenho ---
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        BeginMode3D(camera);
+
+        // Desenha o modelo. Ele usará a textura que acabamos de atribuir ao seu material.
+        DrawModel(cidade, posCentral, 1.0f, WHITE);
+
+        DrawGrid(10, 1.0f);
+
+        EndMode3D();
+
+        DrawFPS(10, 10);
+        DrawText("Modelo com textura personalizada aplicada manualmente", 10, 430, 10, GRAY);
+
+        EndDrawing();
+    }
+
+    // --- Desinicialização (Unload resources) ---
+
+    // Importante: Descarregue a textura que você carregou manualmente
+    UnloadTexture(texturaPersonalizada);
+
+    // Descarregue o modelo (os materiais e malhas originais serão liberados)
+    UnloadModel(cidade);
+
+    CloseWindow();
+
+    return 0;
+}

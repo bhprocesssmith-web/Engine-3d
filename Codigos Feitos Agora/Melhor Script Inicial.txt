@@ -1,0 +1,44 @@
+#include "raylib.h"
+
+void game() {
+	int largura = 800;
+	int altura = 600;
+
+	InitWindow(largura, altura, "Game");
+
+	Camera camera;
+	camera.position = (Vector3){ 10.0f,10.0f,10.0f };
+	camera.target = (Vector3){ 0.0f,0.0f,0.0f };
+	camera.up = (Vector3){ 0.0f,1.0f,0.0f };
+	camera.fovy = 45.0f;
+	camera.projection = CAMERA_PERSPECTIVE;
+
+	SetTargetFPS(60);
+
+	while (!WindowShouldClose()){
+
+		ClearBackground(GRAY);
+
+		BeginMode3D(camera);
+
+		DrawGrid(10, 1.0f);
+
+		EndMode3D();
+
+		DrawFPS(10,10);
+
+		EndDrawing();
+
+	}
+	CloseWindow();
+		
+
+
+}
+
+int main() {
+
+
+	game();
+	return 0;
+}

@@ -1,0 +1,70 @@
+#include "raylib.h"
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
+
+int main(void)
+{
+    // --- Configuração Inicial ---
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] exemplo - movimento de camera livre");
+    SetTargetFPS(60); // Define o FPS alvo
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;             // Projeção em perspectiva
+
+    // Oculta e trava o cursor do mouse na janela para uma experiência de jogo imersiva
+    DisableCursor();
+
+    // --- Loop Principal do Jogo ---
+    while (!WindowShouldClose())    // Loop executa até fechar a janela ou pressionar ESC
+    {
+        // === ATUALIZAÇÃO ===
+
+        // A função UpdateCamera() gerencia automaticamente todos os inputs de teclado/mouse
+        // para o modo CAMERA_FREE.
+        UpdateCamera(&camera, CAMERA_FREE);
+
+        // === DESENHO (RENDERIZAÇÃO) ===
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Inicia o modo de renderização 3D, usando as configurações da 'camera'
+        BeginMode3D(camera);
+
+        // Desenha um plano de chão para referência
+        DrawPlane((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector2) { 50.0f, 50.0f }, LIGHTGRAY);
+        // Desenha a grade e os eixos para visualização do espaço 3D
+        DrawGrid(10, 5.0f);
+
+        // Desenha alguns cubos de exemplo no mundo
+        DrawCube((Vector3) { -2.0f, 1.5f, 0.0f }, 1.0f, 3.0f, 1.0f, RED);
+        DrawCube((Vector3) { 0.0f, 1.5f, 2.0f }, 1.0f, 3.0f, 1.0f, GREEN);
+        DrawCube((Vector3) { 2.0f, 1.5f, 0.0f }, 1.0f, 3.0f, 1.0f, BLUE);
+
+        // Finaliza o modo 3D e retorna ao desenho 2D
+        EndMode3D();
+
+        // Texto de instruções na tela (Interface 2D)
+        DrawRectangle(10, 10, 310, 100, Fade(SKYBLUE, 0.5f));
+        DrawRectangleLines(10, 10, 310, 100, BLUE);
+        DrawText("Controles da Camera Livre (CAMERA_FREE):", 20, 20, 10, BLACK);
+        DrawText("- Movimento: WASD", 20, 40, 10, BLACK);
+        DrawText("- Subir/Descer: Espaco / Shift Esquerdo", 20, 60, 10, BLACK);
+        DrawText("- Olhar ao redor: Mover Mouse", 20, 80, 10, BLACK);
+        DrawText("- Pressione ESC para sair", 20, 100, 10, BLACK);
+
+        EndDrawing();
+        // -----------------
+    }
+
+    // --- Desinicialização ---
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+
+    return 0;
+}
