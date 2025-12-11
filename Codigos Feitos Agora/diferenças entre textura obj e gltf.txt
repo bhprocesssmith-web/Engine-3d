@@ -1,0 +1,21 @@
+OBJ
+
+// Carregamento para OBJ
+Model model = LoadModel("resources/models/meu_modelo.obj");
+Texture2D customTexture = LoadTexture("resources/textures/minha_textura.png");
+
+// OBJ raramente carrega texturas automaticamente, então você atribui manualmente:
+// O primeiro material do modelo (indice 0) recebe a textura carregada
+model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = customTexture;
+
+// ... (Resto do código de desenho é o mesmo) ...
+
+GLTF
+
+// Carregamento para GLTF (automático, se a textura estiver no arquivo GLTF)
+Model model = LoadModel("resources/models/meu_modelo_com_textura_embutida.gltf");
+
+// Nenhuma linha extra de LoadTexture ou atribuição é necessária aqui.
+// A raylib lê o JSON do GLTF e carrega a textura automaticamente.
+
+// ... (Resto do código de desenho é o mesmo) ...

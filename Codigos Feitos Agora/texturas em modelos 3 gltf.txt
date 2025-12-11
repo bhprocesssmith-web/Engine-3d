@@ -1,0 +1,75 @@
+#include "raylib.h"
+
+int main(void)
+{
+    // Inicialização
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "raylib [models] example - load gltf and apply texture");
+
+    // Definir a câmera
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 5.0f, 5.0f, 5.0f };
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    // Carregar o modelo GLTF. A raylib tenta carregar automaticamente texturas
+    // e materiais embutidos ou referenciados no arquivo GLTF.
+    Model model = LoadModel("resources/models/meu_modelo.gltf"); // Substitua pelo caminho do seu modelo
+    Vector3 position = { 0.0f, 0.0f, 0.0f };
+
+    // --- Parte principal para aplicar uma textura externa ---
+    // Carregar uma textura personalizada (difusa/albedo)
+    Texture2D customTexture = LoadTexture("resources/textures/minha_textura.png"); // Substitua pelo caminho da sua textura
+
+    // Atribuir a textura carregada ao primeiro material do modelo.
+    // Em modelos simples, o material[0] é geralmente o material principal.
+    // Usa-se MATERIAL_MAP_DIFFUSE para o mapa de cor base (albedo).
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = customTexture;
+
+    SetTargetFPS(60);
+    //--------------------------------------------------------------------------------------
+
+    // Loop principal do jogo
+    while (!WindowShouldClose())
+    {
+        // Atualização
+        //----------------------------------------------------------------------------------
+        UpdateCamera(&camera, CAMERA_ORBITAL);
+        //----------------------------------------------------------------------------------
+
+        // Desenho
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+
+            BeginMode3D(camera);
+
+                // Desenhar o modelo com a textura aplicada
+                DrawModel(model, position, 1.0f, WHITE);
+                DrawGrid(10, 1.0f);
+
+            EndMode3D();
+
+            DrawFPS(10, 10);
+            DrawText("Modelo com textura aplicada. Pressione ESC para sair.", 10, screenHeight - 20, 10, DARKGRAY);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // Descarregamento/Desinicialização
+    //--------------------------------------------------------------------------------------
+    UnloadTexture(customTexture); // Descarregar a textura da VRAM
+    UnloadModel(model);          // Descarregar o modelo e seus recursos
+
+    CloseWindow();               // Fechar janela e contexto OpenGL
+    //--------------------------------------------------------------------------------------
+
+    return 0;
+}

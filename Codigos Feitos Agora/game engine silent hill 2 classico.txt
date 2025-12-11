@@ -1,0 +1,6 @@
+O
+Silent Hill 2 original (clássico), lançado em 2001 para PlayStation 2 e posteriormente para Xbox e PC, utilizou um motor de jogo 
+proprietário desenvolvido internamente pela Team Silent da Konami. 
+Naquela época, era comum que grandes estúdios criassem suas próprias engines do zero para otimizar o desempenho especificamente 
+para o hardware do console, em vez de usar motores licenciados de terceiros como a Unreal Engine. Os desenvolvedores tiveram que 
+programar a engine do zero, focando em gráficos avançados e iluminação realista para a época.

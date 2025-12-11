@@ -1,0 +1,72 @@
+#include "raylib.h"
+
+int main(void)
+{
+    // Inicialização
+    //--------------------------------------------------------------------------------------
+    const int screenWidth = 800;
+    const int screenHeight = 450;
+
+    InitWindow(screenWidth, screenHeight, "raylib [models] example - load gltf automatic texture");
+
+    // Definir a câmera
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 5.0f, 5.0f, 5.0f };
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    camera.fovy = 45.0f;
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    // Carregar o modelo GLTF. A raylib tenta carregar automaticamente texturas
+    // e materiais embutidos ou referenciados no arquivo GLTF.
+    // Substitua pelo caminho do seu modelo GLTF com textura embutida ou referenciada.
+    Model model = LoadModel("resources/models/meu_modelo_com_textura_embutida.gltf");
+
+    // Nenhuma linha extra de LoadTexture ou atribuição é necessária aqui.
+    // A raylib lê o JSON do GLTF e carrega a textura automaticamente.
+
+    Vector3 position = { 0.0f, 0.0f, 0.0f };
+
+    SetTargetFPS(60);
+    //--------------------------------------------------------------------------------------
+
+    // Loop principal do jogo
+    while (!WindowShouldClose())
+    {
+        // Atualização
+        //----------------------------------------------------------------------------------
+        UpdateCamera(&camera, CAMERA_ORBITAL);
+        //----------------------------------------------------------------------------------
+
+        // Desenho
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+            ClearBackground(RAYWHITE);
+
+            BeginMode3D(camera);
+
+                // Desenhar o modelo com a textura que veio junto no arquivo GLTF
+                DrawModel(model, position, 1.0f, WHITE);
+                DrawGrid(10, 1.0f);
+
+            EndMode3D();
+
+            DrawFPS(10, 10);
+            DrawText("Modelo GLTF com textura automatica. Pressione ESC para sair.", 10, screenHeight - 20, 10, DARKGRAY);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    // Descarregamento/Desinicialização
+    //--------------------------------------------------------------------------------------
+    // Não precisamos chamar UnloadTexture(customTexture) porque não a declaramos/carregamos manualmente.
+    // UnloadModel(model) cuidará de descarregar a textura que ela gerenciou automaticamente.
+    UnloadModel(model);          // Descarregar o modelo e seus recursos (incluindo textura)
+
+    CloseWindow();               // Fechar janela e contexto OpenGL
+    //--------------------------------------------------------------------------------------
+
+    return 0;
+}
