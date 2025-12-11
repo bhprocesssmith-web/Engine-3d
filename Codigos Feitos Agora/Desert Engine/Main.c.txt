@@ -1,0 +1,73 @@
+#include "raylib.h"
+#include "window.h"
+#include "GameObject.h"
+#include "Textos.h"
+#include "Input.h"
+
+int main(void)
+{
+    windowscreen();
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 10.0f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;             // Projeção em perspectiva
+
+    //objects 3ds
+    Model cidade = LoadModel("resources/cube.obj");
+    Texture2D texturaPersonalizada = LoadTexture("resources/textura.png");
+    cidade.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texturaPersonalizada;
+    Vector3 posCentral = { 0.0f, 0.0f, 0.0f };
+
+    Models();
+     
+    // Oculta e trava o cursor do mouse na janela para uma experiência de jogo imersiva
+    DisableCursor();
+
+    // --- Loop Principal do Jogo ---
+    while (!WindowShouldClose())    // Loop executa até fechar a janela ou pressionar ESC
+    {
+
+        
+        // para o modo CAMERA_FREE.
+        UpdateCamera(&camera, CAMERA_FREE);
+
+        Inputscreen();
+        // === DESENHA
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Inicia  renderização 3D
+        BeginMode3D(camera);
+
+        // Desenha o modelo. Ele usará a textura que acabamos de atribuir ao seu material.
+        DrawModel(cidade, posCentral, 1.0f, WHITE);
+
+        Models();
+
+        //finaliza modelos 3ds
+        EndMode3D();
+        
+        textoscreen();
+
+        DrawText("Modelo com textura personalizada aplicada manualmente", 10, 430, 10, GRAY);
+
+        //finaliza desenho
+        EndDrawing();
+        // -----------------
+    }
+
+    UnloadTexture(texturaPersonalizada);
+
+    UnloadModel(cidade);
+
+    EnableCursor();
+    // --- Desinicialização ---
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+
+    return 0;
+}

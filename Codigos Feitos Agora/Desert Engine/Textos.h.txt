@@ -1,0 +1,13 @@
+#include "raylib.h"
+
+void textoscreen() {
+
+    // Texto de instruções na tela (Interface 2D)
+    DrawRectangle(10, 10, 310, 100, Fade(SKYBLUE, 0.5f));
+    DrawRectangleLines(10, 10, 310, 100, SKYBLUE);
+    DrawText("Controles da Camera Livre (CAMERA_FREE):", 20, 20, 10, BLACK);
+    DrawText("- Movimento: WASD", 20, 40, 10, BLACK);
+    DrawText("- Subir/Descer: Espaco / Shift Esquerdo", 20, 60, 10, BLACK);
+    DrawText("- Olhar ao redor: Mover Mouse", 20, 80, 10, BLACK);
+    DrawText("- Pressione ESC para sair", 20, 100, 10, BLACK);
+}

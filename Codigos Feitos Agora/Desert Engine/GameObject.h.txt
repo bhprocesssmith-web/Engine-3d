@@ -1,0 +1,14 @@
+#include "raylib.h"
+
+void Models() {
+
+    // Desenha um plano de chão para referência
+    DrawPlane((Vector3) { 0.0f, 0.0f, 0.0f }, (Vector2) { 50.0f, 50.0f }, LIGHTGRAY);
+    // Desenha a grade e os eixos para visualização do espaço 3D
+    DrawGrid(10, 5.0f);
+
+    // Desenha alguns cubos de exemplo no mundo
+    DrawCube((Vector3) { -2.0f, 1.5f, 0.0f }, 1.0f, 3.0f, 1.0f, RED);
+    DrawCube((Vector3) { 0.0f, 1.5f, 2.0f }, 1.0f, 3.0f, 1.0f, GREEN);
+    DrawCube((Vector3) { 2.0f, 1.5f, 0.0f }, 1.0f, 3.0f, 1.0f, BLUE);
+}

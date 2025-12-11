@@ -1,0 +1,16 @@
+#include "raylib.h"
+
+void Inputscreen() {
+
+    if (IsKeyPressed(KEY_P))
+    {
+        if (IsCursorHidden())
+        {
+            EnableCursor();
+        }
+        else
+        {
+            DisableCursor();
+        }
+    }
+}

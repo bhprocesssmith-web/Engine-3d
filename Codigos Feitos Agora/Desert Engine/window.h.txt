@@ -1,0 +1,9 @@
+#include "raylib.h"
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
+
+void windowscreen() {
+	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Desert Engine");
+	SetTargetFPS(60); // Define o FPS alvo
+}
