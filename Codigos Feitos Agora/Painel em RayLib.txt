@@ -1,0 +1,44 @@
+#include "raylib.h"
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
+#define PANEL_WIDTH 400
+#define PANEL_HEIGHT 200
+
+int main(void)
+{
+    // --- Configuração Inicial ---
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Painel Preto Transparente (Raylib)");
+    SetTargetFPS(60);
+
+    // Define a cor preta com transparência parcial
+    // (R, G, B, A) -> (0, 0, 0, 180)
+    Color semiTransparentBlack = { 0, 0, 0, 180 };
+
+    // Calcula a posição para centralizar o painel
+    int panelX = (SCREEN_WIDTH / 2) - (PANEL_WIDTH / 2);
+    int panelY = (SCREEN_HEIGHT / 2) - (PANEL_HEIGHT / 2);
+
+    // --- Loop Principal do Programa ---
+    while (!WindowShouldClose())
+    {
+        // === DESENHO (RENDERIZAÇÃO) ===
+        BeginDrawing();
+
+        // Use um fundo diferente (ex: cinza) para ver a transparência melhor
+        ClearBackground(DARKGRAY);
+
+        // Desenha o painel preto transparente
+        DrawRectangle(panelX, panelY, PANEL_WIDTH, PANEL_HEIGHT, semiTransparentBlack);
+
+        // Adiciona um texto para referência
+        DrawText("PAINEL PRETO TRANSPARENTE (Alpha 180)", panelX + 20, panelY + 90, 15, WHITE);
+
+        EndDrawing();
+    }
+
+    // --- Desinicialização ---
+    CloseWindow();
+
+    return 0;
+}
