@@ -1,0 +1,47 @@
+quando cria uma engine 3d colisor pode modelar um modelo 3d envolta do modelo original para fazer a colisao
+
+Sim, essa é uma das técnicas mais utilizadas no desenvolvimento de jogos profissionais e engines 3D. Esse modelo simplificado é chamado de
+Collision Mesh (ou Proxy de Colisão).
+Em 2025, mesmo com o avanço do hardware, calcular colisão triângulo por triângulo (per-poly collision) de um modelo complexo de 50.000 
+polígonos é extremamente custoso. Criar um modelo simplificado "em volta" do original resolve esse problema.
+Aqui estão os detalhes técnicos e as melhores práticas para fazer isso:
+
+1. Por que usar um modelo de colisão separado?
+
+    Desempenho: Um personagem pode ter milhares de polígonos para renderização visual (texturas, shaders, dobras de roupa), mas sua 
+colisão pode ser representada por um "casulo" de apenas 100 polígonos.
+    Precisão Controlada: Às vezes, você não quer que a colisão seja perfeita. Por exemplo, em um jogo de tiro, você pode simplificar a 
+colisão de uma árvore para que o jogador não fique preso em pequenos galhos invisíveis.
+    Estabilidade Física: Motores de física (como PhysX, Bullet ou o próprio sistema da Raylib) lidam muito melhor com formas convexas e 
+simples.
+
+2. Tipos de "Modelagem" para Colisão
+Existem três níveis de complexidade ao criar esses colisores:
+
+    Primitivas Básicas: Usar esferas, caixas (AABB) ou cápsulas. É o mais rápido de processar.
+    Convex Hull (Casca Convexa): É como se você esticasse um elástico em volta do seu modelo 3D. Não tem "buracos" ou reentrâncias. 
+Quase todas as engines processam isso de forma muito eficiente.
+    Concave/Triangle Mesh: Um modelo simplificado que segue o formato original, inclusive com buracos (ex: um portal ou uma caverna). É 
+o mais pesado dos três, mas ainda melhor que o modelo visual original.
+
+3. Como implementar na prática (Workflow)
+Se você estiver usando o Blender para exportar para uma engine como a Raylib, o processo geralmente é:
+
+    Crie seu modelo detalhado (ex: espada_visual.obj).
+    Crie um modelo simplificado em cima dele, cobrindo apenas o volume principal (ex: espada_colisor.obj).
+    Na Engine:
+        Desenhe o modelo visual.
+        Para a física, carregue o modelo colisor usando funções como LoadModel() e extraia os dados dos triângulos para a biblioteca de 
+física, mas não o desenhe na tela (mantenha-o invisível).
+
+4. Na Raylib especificamente
+A Raylib possui funções para verificar colisão contra triângulos e modelos:
+
+    GetRayCollisionMesh(): Verifica a colisão de um raio contra uma malha específica.
+    CheckCollisionBoxes(): Para colisores simples tipo caixa.
+
+Dica de Ouro: Se você está criando uma engine própria, nomeie seus objetos de colisão com um prefixo (como UCX_ ou COL_). Muitas engines 
+modernas reconhecem esse prefixo no arquivo .fbx ou .obj e já convertem aquele modelo automaticamente em um colisor invisível, poupando 
+trabalho manual de programação.
+Para aprender mais sobre como as malhas de colisão funcionam em tempo real, você pode consultar a documentação de física do Blender, que 
+explica bem a diferença entre os formatos de colisão.

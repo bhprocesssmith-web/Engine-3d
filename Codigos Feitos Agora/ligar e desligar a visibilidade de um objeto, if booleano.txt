@@ -1,0 +1,3 @@
+if (objeto->visivel) {
+    DrawModel(objeto->modelo, posicao, 1.0f, WHITE);
+}

@@ -1,0 +1,11 @@
+Model colisor = LoadModel("colisor_simples.obj"); // Carrega na RAM e VRAM
+// ...
+while (!WindowShouldClose()) {
+    BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        // DrawModel(modeloVisual, ...)  <-- Você desenha o modelo bonito
+        // O modelo 'colisor' NÃO tem uma função Draw aqui, portanto é invisível.
+
+    EndDrawing();
+}

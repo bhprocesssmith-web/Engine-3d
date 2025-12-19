@@ -1,0 +1,5 @@
+// Desenha com 0 de opacidade (totalmente invisível, mas processado pela GPU)
+DrawModel(colisor, posicao, 1.0f, ColorAlpha(WHITE, 0.0f)); 
+
+// Desenha apenas as linhas (Wireframe) para debug, sem o preenchimento
+DrawModelWires(colisor, posicao, 1.0f, RED); 

@@ -1,0 +1,38 @@
+#include "raylib.h"
+
+int main() {
+    // 1. Inicializar a Janela e o Dispositivo de Áudio
+    InitWindow(800, 450, "raylib [audio] exemplo");
+    InitAudioDevice();      
+
+    // 2. Carregar o som (formatos suportados: WAV, OGG, MP3, etc.)
+    Sound fxWav = LoadSound("resources/sound.wav");         // Som curto (efeito)
+    Music music = LoadMusicStream("resources/ambient.mp3"); // Som longo (música)
+
+    PlayMusicStream(music);
+
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
+        // 3. Atualizar o stream de música (necessário para músicas longas)
+        UpdateMusicStream(music);
+
+        // 4. Lógica para tocar efeito sonoro (Ex: ao apertar Espaço)
+        if (IsKeyPressed(KEY_SPACE)) {
+            PlaySound(fxWav);
+        }
+
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+            DrawText("Pressione ESPAÇO para tocar o som!", 200, 200, 20, LIGHTGRAY);
+        EndDrawing();
+    }
+
+    // 5. Limpeza de memória
+    UnloadSound(fxWav);         
+    UnloadMusicStream(music);   
+    CloseAudioDevice();     
+    CloseWindow();
+
+    return 0;
+}
