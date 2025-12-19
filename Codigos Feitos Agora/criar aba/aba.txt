@@ -1,0 +1,41 @@
+#include "raylib.h"
+
+int main() {
+    InitWindow(800, 450, "raylib - Aba Unica");
+
+    // Define a posição e o tamanho da aba (x, y, largura, altura)
+    Rectangle aba = { 10, 0, 120, 35 }; 
+    bool clicado = false;
+
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
+        // Lógica: Verifica se o mouse está sobre a aba
+        Vector2 mousePos = GetMousePosition();
+        bool mouseEmCima = CheckCollisionPointRec(mousePos, aba);
+
+        if (mouseEmCima && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            clicado = !clicado; // Inverte o estado ao clicar
+        }
+
+        BeginDrawing();
+            ClearBackground(RAYWHITE);
+
+            // 1. Desenha a aba (Muda de cor se o mouse estiver em cima ou se clicado)
+            Color corAba = clicado ? DARKBLUE : (mouseEmCima ? LIGHTGRAY : GRAY);
+            DrawRectangleRec(aba, corAba);
+            
+            // 2. Texto da aba
+            DrawText("ABA 1", aba.x + 25, aba.y + 8, 20, WHITE);
+
+            // 3. Conteúdo condicional
+            if (clicado) {
+                DrawText("Aba Selecionada!", 300, 200, 20, DARKGRAY);
+            }
+
+        EndDrawing();
+    }
+
+    CloseWindow();
+    return 0;
+}

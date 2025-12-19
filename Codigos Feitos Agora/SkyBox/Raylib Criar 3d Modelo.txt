@@ -1,0 +1,3 @@
+// Gera uma esfera (o tamanho não importa muito, pois ela seguirá a câmera)
+Mesh sphere = GenMeshSphere(1.0f, 32, 32); 
+Model skybox = LoadModelFromMesh(sphere);

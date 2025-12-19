@@ -1,0 +1,267 @@
+#include "raylib.h"
+#include "window.h"
+#include "Input.h"
+#include "raymath.h"
+
+void game()
+{
+    windowscreen();
+    //variaveis
+    bool skyboxenable = false;
+    
+
+    //ground
+    Mesh meshPlano = GenMeshPlane(50.0f, 50.0f, 1,1);
+    Model chao = LoadModelFromMesh(meshPlano);
+    Texture2D texturaChao = LoadTexture("resources/grama.png");
+    SetTextureWrap(texturaChao, TEXTURE_WRAP_REPEAT);
+    chao.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texturaChao;
+    ////end goround
+    
+    //botoes
+    Rectangle btnBounds = { 10, 480, 100, 50 };
+    int btnState = 0;
+    bool action = false;
+
+    Rectangle botaocamera = { 10,420,100,50 };
+    int botaocamerastate = 0;
+    bool actioncamera = false;
+
+
+    Rectangle botaotargetrect = { 10,360,100,50 };
+    int botaocameratarget = 0;
+    bool botaotarget = false;
+
+
+    Color skyColor = {0,0,255};
+    ///
+
+
+   //skybox////
+    Mesh sphere = GenMeshCube(1.0f, 1, 1);
+    Model skybox = LoadModelFromMesh(sphere);
+
+    // Carregando a textura panorâmica
+    Texture2D panorama = LoadTexture("resources/sky blue.jpg");
+
+    // Configurações para evitar a "linha" de emenda e garantir suavidade
+    SetTextureWrap(panorama, TEXTURE_WRAP_REPEAT);
+    SetTextureFilter(panorama, TEXTURE_FILTER_BILINEAR);
+
+    // Atribui a textura ao material da esfera
+    skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = panorama;
+    //skyboxend
+
+
+
+    // variaveis
+    
+    Teclado inputs = { 0 };
+    Vector3 posCubo = { 0.0f, 0.5f, 0.0f }; // Posição inicial do cubo
+    float velocidade = 0.2f;
+
+    //Teclado inputs = { 0 };
+    bool exibirObjeto = false;
+    bool cameraAtiva = true;
+
+    float escala = 1.0f;
+    
+    Model model = LoadModel("resources/scene.gltf");
+    Texture2D texture = LoadTexture("resources/Texture.png");
+
+    
+    
+    for (int i = 0; i < model.materialCount; i++) {
+        model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+        
+    }
+
+    Vector3 posicaoModelo = { 0.0f, 2.0f, 0.0f };
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.1f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    SetTargetFPS(60); // Define o FPS alvo
+
+    // Loop Principal do Jogo 
+    while (!WindowShouldClose())    
+    {
+        
+        //-------------------------camera target----------------//
+        // --- Lógica de Seguimento da Câmera ---
+        if (actioncamera) {
+            // Câmera Travada (Third Person)
+            camera.target = posCubo;
+            camera.position.x = posCubo.x + 10.0f;
+            camera.position.y = posCubo.y + 10.0f;
+            camera.position.z = posCubo.z + 10.0f;
+        }
+        else if (botaotarget) {
+            // Câmera Suave (Lerp) - Ela olha para o cubo mas não se move bruscamente
+            camera.target = Vector3Lerp(camera.target, posCubo, 0.1f);
+        }
+
+        
+        //---------------------end camera target----------------//
+
+        
+
+
+        Vector2 mousePoint = GetMousePosition();//variavel unica do mouse
+        
+        action = false;
+
+        // Lógica de colisão e interação
+        if (CheckCollisionPointRec(mousePoint, btnBounds)) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) btnState = 2;
+            else btnState = 1;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) action = true;
+        }
+        else {
+            btnState = 0;
+        }
+
+        if (action) {
+            // AÇÃO DO BOTÃO AQUI
+            skyboxenable = !skyboxenable;
+            TraceLog(LOG_INFO, "Botão pressionado!");
+        }
+
+        // Lógica target caemra seguir
+
+        
+        // Lógica para o botão de SEGUIR (Câmera Travada)
+        if (CheckCollisionPointRec(mousePoint, botaocamera)) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) botaocamerastate = 2;
+            else botaocamerastate = 1;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                actioncamera = true;  // Ativa seguir
+                botaotarget = false;  // Desativa o suave
+            }
+        }
+        else botaocamerastate = 0;
+
+        // Lógica para o botão de TARGET (Câmera Suave)
+        if (CheckCollisionPointRec(mousePoint, botaotargetrect)) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) botaocameratarget = 2;
+            else botaocameratarget = 1;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+                botaotarget = true;    // Ativa suave
+                actioncamera = false;  // Desativa o seguir
+            }
+        }
+        else botaocameratarget = 0;
+
+
+
+        //atualizarInput(&inputs);
+        inputteclado(&inputs);
+        // Aplica o movimento nos eixos X e Z baseados na struct
+        posCubo.x += inputs.direction.x * velocidade;
+        posCubo.z += inputs.direction.z * velocidade;
+        
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+             
+            UpdateCamera(&camera, CAMERA_FREE);
+       }
+        
+        if (inputs.precionando) {
+            exibirObjeto = !exibirObjeto; // Inverte o estado (liga/desliga o objeto)
+        }
+
+        
+     BeginDrawing();//-----------------------DRAWING-----------------//
+
+        
+        ClearBackground(RAYWHITE);
+        // Inicia o modo de renderização 3D, usando as configurações da 'camera'
+        BeginMode3D(camera);
+
+            //chao 3d
+            //DrawModel(chao, (Vector3) { 0, 0, 0 }, 1.0f, GRAY);
+            DrawPlane((Vector3) { 0, 0, 0 }, (Vector2) { 50, 50 }, GRAY);
+
+            DrawModel(model, posicaoModelo, 1.0f, WHITE);
+
+            if (inputs.ativarsky) {
+                skyboxenable = ! skyboxenable;
+
+            }
+
+            if (skyboxenable){
+            
+                
+               // DrawModelEx(skybox, camera.position, (Vector3) { 0, 1, 0 }, 0.0f, (Vector3) { -1.0f, 1.0f, 1.0f }, skyColor);
+                rlDisableDepthMask();
+                rlDisableBackfaceCulling();
+                DrawModel(skybox, camera.position, 1.0f, WHITE);
+                
+                rlEnableBackfaceCulling();
+                rlEnableDepthMask();
+            }
+
+            
+            
+            if (exibirObjeto) {
+                // Agora o cubo usará a posição calculada pelas setas do teclado
+                DrawCube(posCubo, 1.0f, 1.0f, 1.0f, GREEN);
+                // Adicione um 'Wire' para ver melhor as bordas do cubo
+                DrawCubeWires(posCubo, 1.0f, 1.0f, 1.0f, BLACK);
+            }
+                DrawGrid(20, 0.8f);
+
+                if (model.meshCount > 0) {
+                    
+                    DrawModel(model, posicaoModelo, escala, WHITE);
+                    
+                    
+                }
+        
+        
+
+        // Finaliza o modo 3D e retorna ao desenho 2D
+        EndMode3D();
+
+            DrawFPS(10, 10);
+            Color btnColor = (btnState == 2) ? MAROON : (btnState == 1 ? RED : DARKGRAY);
+            DrawRectangleRec(btnBounds, btnColor);
+            DrawText("skybox", (int)btnBounds.x + 20, (int)btnBounds.y + 15, 20, WHITE);
+
+            Color botaocolor = (botaocamerastate == 2) ? MAROON : (botaocamerastate == 1 ? RED : DARKGRAY);
+            DrawRectangleRec(botaocamera, botaocolor);
+            DrawText("target", (int)botaocamera.x + 20, (int)botaocamera.y + 15, 20, WHITE);
+
+            Color botaocolortarget = (botaocameratarget == 2) ? MAROON : (botaocameratarget == 1 ? RED : DARKGRAY);
+            DrawRectangleRec(botaotargetrect, botaocolortarget);
+            DrawText("olhar", (int)botaotargetrect.x + 20, (int)botaotargetrect.y + 15, 20, WHITE);
+
+
+        EndDrawing();//---------------------DRAWING--------------------//
+        
+    }
+
+    // --- Desinicialização ---
+    UnloadTexture(texture);
+    UnloadTexture(panorama);
+    UnloadModel(model);
+    UnloadModel(skybox);
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+    
+    return 0;
+}
+
+int main() {
+
+    game();
+    return 0;
+}

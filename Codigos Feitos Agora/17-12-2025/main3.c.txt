@@ -1,0 +1,186 @@
+#include "raylib.h"
+#include "window.h"
+#include "AddObjects.h"
+#include "Input.h"
+#include "SkyBox.h"
+
+//#define SCREEN_WIDTH 800
+//#define SCREEN_HEIGHT 450
+
+void game()
+{
+
+    //variaveis
+    bool skyboxenable = false;
+
+
+    //botoes
+    Rectangle btnBounds = { 10, 380, 100, 50 };
+    int btnState = 0; // 0 = Normal, 1 = Mouse em cima, 2 = Clicado
+    bool action = false;
+
+    windowscreen();
+    
+    Mesh sphere = GenMeshSphere(1.0f, 32, 32);
+    Model skybox = LoadModelFromMesh(sphere);
+
+    Texture2D panorama = LoadTexture("resources/sky.jpg");
+    skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = panorama;
+
+            // Projeção em perspectiva
+
+    // variaveis
+    //bool precionando = false;
+    
+    Teclado inputs = { 0 };
+    Vector3 posCubo = { 0.0f, 0.5f, 0.0f }; // Posição inicial do cubo
+    float velocidade = 0.2f;
+
+    //Teclado inputs = { 0 };
+    bool exibirObjeto = false;
+
+    bool cameraAtiva = true;
+
+    //Vector3 posicaoModelo = { 0.0f, 0.0f, 0.0f };
+    
+    
+    float escala = 1.0f;
+    
+    Model model = LoadModel("resources/scene.gltf");
+    Texture2D texture = LoadTexture("resources/Texture.png");
+
+    
+    
+    for (int i = 0; i < model.materialCount; i++) {
+        model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+        
+    }
+
+    Vector3 posicaoModelo = { 0.0f, 2.0f, 0.0f };
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.1f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;
+
+    SetTargetFPS(60); // Define o FPS alvo
+
+    // Loop Principal do Jogo 
+    while (!WindowShouldClose())    
+    {
+        
+        Vector2 mousePoint = GetMousePosition();
+        action = false;
+
+        // Lógica de colisão e interação
+        if (CheckCollisionPointRec(mousePoint, btnBounds)) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) btnState = 2;
+            else btnState = 1;
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) action = true;
+        }
+        else {
+            btnState = 0;
+        }
+
+        if (action) {
+            // AÇÃO DO BOTÃO AQUI
+            skyboxenable = !skyboxenable;
+            TraceLog(LOG_INFO, "Botão pressionado!");
+        }
+
+
+        //atualizarInput(&inputs);
+        inputteclado(&inputs);
+        // Aplica o movimento nos eixos X e Z baseados na struct
+        posCubo.x += inputs.direction.x * velocidade;
+        posCubo.z += inputs.direction.z * velocidade;
+        
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+             
+            UpdateCamera(&camera, CAMERA_FREE);
+       }
+        
+        if (inputs.precionando) {
+            exibirObjeto = !exibirObjeto; // Inverte o estado (liga/desliga o objeto)
+        }
+
+       
+
+        // === DESENHO (RENDERIZAÇÃO) ===
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Inicia o modo de renderização 3D, usando as configurações da 'camera'
+        BeginMode3D(camera);
+
+            DrawModel(model, posicaoModelo, 1.0f, WHITE);
+
+            if (inputs.ativarsky) {
+                skyboxenable = ! skyboxenable;
+
+            }
+
+            if (skyboxenable){
+            
+
+                rlDisableDepthMask();
+                rlDisableBackfaceCulling();
+                DrawModel(skybox, camera.position, 1.0f, WHITE);
+               
+                rlEnableBackfaceCulling();
+                rlEnableDepthMask();
+            }
+
+            
+            
+            if (exibirObjeto) {
+                // Agora o cubo usará a posição calculada pelas setas do teclado
+                DrawCube(posCubo, 1.0f, 1.0f, 1.0f, GRAY);
+                // Adicione um 'Wire' para ver melhor as bordas do cubo
+                DrawCubeWires(posCubo, 1.0f, 1.0f, 1.0f, BLACK);
+            }
+                DrawGrid(20, 0.8f);
+
+                if (model.meshCount > 0) {
+                    
+                    DrawModel(model, posicaoModelo, escala, WHITE);
+                    //DrawModelWires(model, posicaoModelo, escala, WHITE);
+                    
+                }
+        
+        
+
+        // Finaliza o modo 3D e retorna ao desenho 2D
+        EndMode3D();
+
+            DrawFPS(10, 10);
+            Color btnColor = (btnState == 2) ? MAROON : (btnState == 1 ? RED : DARKGRAY);
+            DrawRectangleRec(btnBounds, btnColor);
+            DrawText("skybox", (int)btnBounds.x + 20, (int)btnBounds.y + 15, 20, WHITE);
+
+        EndDrawing();
+        // -----------------
+    }
+
+    // --- Desinicialização ---
+    UnloadTexture(texture);
+    UnloadTexture(panorama);
+    UnloadModel(model);
+    UnloadModel(skybox);
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+    
+    return 0;
+}
+
+int main() {
+
+    game();
+    return 0;
+}

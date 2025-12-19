@@ -1,0 +1,24 @@
+#pragma once
+#include "raylib.h"
+
+typedef struct {
+    //int teclaAlvo;      // A tecla que queremos monitorar (ex: KEY_P)
+    bool precionando; // O resultado da verificação
+    Vector3 direction;
+} Teclado;
+
+void inputteclado(Teclado* tecla) {
+
+    
+    tecla->precionando = IsKeyPressed(KEY_P);
+    
+    tecla->direction = (Vector3){ 0,0,0 };
+    if (IsKeyDown(KEY_LEFT)) tecla->direction.x -= 1.0f;
+    if (IsKeyDown(KEY_RIGHT)) tecla->direction.x += 1.0f;
+    if (IsKeyDown(KEY_UP)) tecla->direction.z -= 1.0f;
+    if (IsKeyDown(KEY_DOWN)) tecla->direction.z += 1.0f;
+
+    
+}
+
+

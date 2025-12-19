@@ -1,0 +1,157 @@
+#include "raylib.h"
+#include "window.h"
+#include "AddObjects.h"
+#include "Input.h"
+#include "SkyBox.h"
+
+//#define SCREEN_WIDTH 800
+//#define SCREEN_HEIGHT 450
+
+void game()
+{
+
+
+    //variaveis
+    bool skyboxenable = false;
+
+
+
+
+
+    windowscreen();
+    
+    Mesh sphere = GenMeshSphere(1.0f, 32, 32);
+    Model skybox = LoadModelFromMesh(sphere);
+
+    Texture2D panorama = LoadTexture("resources/sky.jpg");
+    skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = panorama;
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.1f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;             // Projeção em perspectiva
+
+    // variaveis
+    //bool precionando = false;
+    
+    Teclado inputs = { 0 };
+    Vector3 posCubo = { 0.0f, 0.5f, 0.0f }; // Posição inicial do cubo
+    float velocidade = 0.2f;
+
+    //Teclado inputs = { 0 };
+    bool exibirObjeto = false;
+
+    bool cameraAtiva = true;
+
+    Vector3 posicaoModelo = { 0.0f, 0.0f, 0.0f };
+    float escala = 1.0f;
+    
+    Model model = LoadModel("resources/scene.gltf");
+    Texture2D texture = LoadTexture("resources/Texture.png");
+
+    // Garante que todas as partes do modelo usem a mesma textura
+    for (int i = 0; i < model.materialCount; i++) {
+        model.materials[i].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
+        // Em versões recentes, você também pode precisar usar:
+        // model.materials[i].maps[MATERIAL_MAP_ALBEDO].texture = texture;
+    }
+
+    SetTargetFPS(60); // Define o FPS alvo
+
+    // --- Loop Principal do Jogo ---
+    while (!WindowShouldClose())    // Loop executa até fechar a janela ou pressionar ESC
+    {
+        //input
+        //atualizarInput(&inputs);
+        inputteclado(&inputs);
+        // Aplica o movimento nos eixos X e Z baseados na struct
+        posCubo.x += inputs.direction.x * velocidade;
+        posCubo.z += inputs.direction.z * velocidade;
+        
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+             
+            UpdateCamera(&camera, CAMERA_FREE);
+       }
+        
+
+        
+
+        // 3. ATUALIZAÇÃO DA CÂMERA
+        // A câmera sempre atualiza se estiver ativa (mesmo sem segurar botão)
+        
+
+        if (inputs.precionando) {
+            exibirObjeto = !exibirObjeto; // Inverte o estado (liga/desliga o objeto)
+        }
+
+       
+        
+
+
+
+        // === DESENHO (RENDERIZAÇÃO) ===
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Inicia o modo de renderização 3D, usando as configurações da 'camera'
+        BeginMode3D(camera);
+
+            if (inputs.ativarsky) {
+                skyboxenable = ! skyboxenable;
+
+            }
+
+            if (skyboxenable){
+            
+
+                rlDisableDepthMask();
+                rlDisableBackfaceCulling();
+                DrawModel(skybox, camera.position, 1.0f, WHITE);
+                rlEnableBackfaceCulling();
+                rlEnableDepthMask();
+            }
+
+            
+            
+            if (exibirObjeto) {
+                // Agora o cubo usará a posição calculada pelas setas do teclado
+                DrawCube(posCubo, 1.0f, 1.0f, 1.0f, GRAY);
+                // Adicione um 'Wire' para ver melhor as bordas do cubo
+                DrawCubeWires(posCubo, 1.0f, 1.0f, 1.0f, BLACK);
+            }
+                DrawGrid(20, 0.8f);
+                if (model.meshCount > 0) {
+                    DrawModel(model, (Vector3) { 0, 0, 0 }, 1.0f, GRAY);
+                    DrawModel(model, posicaoModelo, escala, GRAY);
+                    //DrawModelWires(model, posicaoModelo, escala, WHITE);
+                }
+        
+        
+
+        // Finaliza o modo 3D e retorna ao desenho 2D
+        EndMode3D();
+
+            DrawFPS(10, 10);
+
+        EndDrawing();
+        // -----------------
+    }
+
+    // --- Desinicialização ---
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+    UnloadTexture(texture);
+    UnloadModel(model);
+    return 0;
+}
+
+int main() {
+
+    game();
+    return 0;
+}

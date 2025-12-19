@@ -1,0 +1,3 @@
+Texture2D panorama = LoadTexture("resources/skybox_360.png"); 
+// Aplica a textura ao material padrão do modelo
+skybox.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = panorama;

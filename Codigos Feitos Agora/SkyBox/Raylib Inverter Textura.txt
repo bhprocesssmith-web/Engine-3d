@@ -1,0 +1,12 @@
+BeginMode3D(camera);
+    rlDisableDepthMask();        // Impede que a esfera bloqueie outros objetos
+    rlDisableBackfaceCulling();   // Permite ver o interior da esfera
+
+    // Desenha a esfera centralizada na posição da câmera
+    DrawModel(skybox, camera.position, 1.0f, WHITE);
+
+    rlEnableBackfaceCulling();
+    rlEnableDepthMask();
+    
+    // Desenhe o restante do seu jogo...
+EndMode3D();

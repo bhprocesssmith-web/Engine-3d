@@ -1,0 +1,114 @@
+#include "raylib.h"
+#include "window.h"
+#include "AddObjects.h"
+#include "Input.h"
+
+//#define SCREEN_WIDTH 800
+//#define SCREEN_HEIGHT 450
+
+void game()
+{
+    windowscreen();
+    
+
+    // --- Configuração da Câmera 3D ---
+    Camera camera = { 0 };
+    camera.position = (Vector3){ 0.1f, 10.0f, 10.0f }; // Posição inicial (olhando para a origem)
+    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Ponto para onde a câmera olha
+    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Vetor "para cima" (eixo Y positivo)
+    camera.fovy = 60.0f;                                // Campo de visão (graus)
+    camera.projection = CAMERA_PERSPECTIVE;             // Projeção em perspectiva
+
+    // variaveis
+    //bool precionando = false;
+    
+    Teclado inputs = { 0 };
+    Vector3 posCubo = { 0.0f, 0.5f, 0.0f }; // Posição inicial do cubo
+    float velocidade = 0.2f;
+
+    //Teclado inputs = { 0 };
+    bool exibirObjeto = false;
+
+    bool cameraAtiva = true;
+    // Oculta e trava o cursor do mouse na janela para uma experiência de jogo imersiva
+    //DisableCursor();
+    SetTargetFPS(60); // Define o FPS alvo
+
+    // --- Loop Principal do Jogo ---
+    while (!WindowShouldClose())    // Loop executa até fechar a janela ou pressionar ESC
+    {
+        //input
+        //atualizarInput(&inputs);
+        inputteclado(&inputs);
+        // Aplica o movimento nos eixos X e Z baseados na struct
+        posCubo.x += inputs.direction.x * velocidade;
+        posCubo.z += inputs.direction.z * velocidade;
+        
+
+        if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+        {
+             
+            UpdateCamera(&camera, CAMERA_FREE);
+       }
+        
+
+        
+
+        // 3. ATUALIZAÇÃO DA CÂMERA
+        // A câmera sempre atualiza se estiver ativa (mesmo sem segurar botão)
+        
+
+        if (inputs.precionando) {
+            exibirObjeto = !exibirObjeto; // Inverte o estado (liga/desliga o objeto)
+        }
+
+       
+        
+
+
+
+        // === DESENHO (RENDERIZAÇÃO) ===
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Inicia o modo de renderização 3D, usando as configurações da 'camera'
+        BeginMode3D(camera);
+
+            //addobject();
+            //DrawCube(posCubo, 1.0f, 1.0f, 1.0f, BLUE);
+
+            //if (exibirObjeto) {
+                //addobject(); // Chama sua função de desenho
+            //}
+            if (exibirObjeto) {
+                // Agora o cubo usará a posição calculada pelas setas do teclado
+                DrawCube(posCubo, 1.0f, 1.0f, 1.0f, GRAY);
+                // Adicione um 'Wire' para ver melhor as bordas do cubo
+                DrawCubeWires(posCubo, 1.0f, 1.0f, 1.0f, BLACK);
+            }
+                DrawGrid(20, 0.8f);
+        
+        
+        
+
+        // Finaliza o modo 3D e retorna ao desenho 2D
+        EndMode3D();
+
+            DrawFPS(10, 10);
+
+        EndDrawing();
+        // -----------------
+    }
+
+    // --- Desinicialização ---
+    CloseWindow(); // Fecha a janela e o contexto OpenGL
+
+    return 0;
+}
+
+int main() {
+
+    game();
+    return 0;
+}
